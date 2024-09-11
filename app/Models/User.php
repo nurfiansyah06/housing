@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Str;
 
 class User extends Authenticatable
 {
@@ -44,5 +45,18 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function createCustomToken($tokenName = 'default')
+    {
+        $plainTextToken = Str::random(60);
+
+        $this->tokens()->create([
+            'name' => $tokenName,
+            'token' => hash('sha256', $plainTextToken),
+            'abilities' => ['*'],
+        ]);
+
+        return $plainTextToken;
     }
 }
